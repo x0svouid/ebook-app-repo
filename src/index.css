@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   Design System — from Stitch "Onboarding user"
+   ============================================ */
+
+:root {
+    /* Colors */
+    --primary: #19c3e6;
+    --primary-20: rgba(25, 195, 230, 0.2);
+    --primary-30: rgba(25, 195, 230, 0.3);
+    --primary-40: rgba(25, 195, 230, 0.4);
+    --primary-10: rgba(25, 195, 230, 0.1);
+    --primary-5: rgba(25, 195, 230, 0.05);
+
+    --bg-light: #f6f8f8;
+    --bg-dark: #111e21;
+
+    --text-900: #0f172a;
+    --text-100: #f1f5f9;
+    --text-400: #94a3b8;
+    --text-500: #64748b;
+
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-700: #334155;
+    --slate-700-50: rgba(51, 65, 85, 0.5);
+    --slate-800: #1e293b;
+    --slate-800-50: rgba(30, 41, 59, 0.5);
+
+    --pink-400: #f472b6;
+    --pink-400-10: rgba(244, 114, 182, 0.1);
+    --pink-400-5: rgba(244, 114, 182, 0.05);
+
+    /* Fonts */
+    --font-display: 'Manrope', sans-serif;
+    --font-serif: 'DM Serif Display', serif;
+
+    /* Radius */
+    --radius-sm: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-full: 9999px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: var(--font-display);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: max(884px, 100dvh);
+}
+
+/* Dark mode (default for this app's onboarding) */
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-100);
+}
+
+body.light-mode {
+    background-color: var(--bg-light);
+    color: var(--text-900);
+}
+
+.serif-title {
+    font-family: var(--font-serif);
+}
+
+/* Animations */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.float-animation {
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.glow-effect {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Global Utilities */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.glass-header {
+    background-color: rgba(10, 17, 19, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Typography Overrides */
+.prose blockquote {
+    border-left-width: 0.25rem;
+    padding-left: 1.5rem;
+    border-left-color: var(--primary);
+}
