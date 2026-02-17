@@ -5,6 +5,7 @@ import './SearchPage.css';
 const SearchPage: React.FC = () => {
     return (
         <div className="dark bg-background-dark font-display text-slate-200 antialiased min-h-screen flex selection:bg-primary/30">
+            {/* Desktop Sidebar Navigation */}
             <aside className="hidden md:flex flex-col items-center w-20 lg:w-64 shrink-0 border-r border-white/5 bg-[#0a1113] sticky top-0 h-screen py-8 gap-2">
                 <div className="mb-8 flex items-center justify-center lg:justify-start lg:px-6 w-full">
                     <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>local_library</span>
@@ -30,8 +31,10 @@ const SearchPage: React.FC = () => {
                 </nav>
             </aside>
 
+            {/* Main Content */}
             <div className="flex-1 flex flex-col min-h-screen">
                 <main className="flex-1 px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-10 pb-32 md:pb-12 overflow-y-auto no-scrollbar md:max-w-3xl md:mx-auto md:w-full">
+                    {/* Header */}
                     <header className="mb-8 sm:mb-10">
                         <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-5 sm:mb-6 font-serif">Recherche</h1>
                         <div className="relative group">
@@ -46,6 +49,7 @@ const SearchPage: React.FC = () => {
                         </div>
                     </header>
 
+                    {/* Recent Searches */}
                     <section className="mb-8 sm:mb-10">
                         <div className="flex items-center justify-between mb-3 sm:mb-4">
                             <h2 className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">Recherches récentes</h2>
@@ -63,9 +67,11 @@ const SearchPage: React.FC = () => {
                         </div>
                     </section>
 
+                    {/* Suggestions */}
                     <section>
                         <h2 className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest mb-5 sm:mb-6">Suggéré pour vous</h2>
                         <div className="space-y-5 sm:space-y-6">
+                            {/* Result 1 */}
                             <div className="flex gap-4 sm:gap-5 group cursor-pointer">
                                 <div className="shrink-0 w-16 h-24 sm:w-20 sm:h-28 rounded-xl overflow-hidden shadow-lg transform group-hover:scale-[1.03] transition-transform duration-300">
                                     <img
@@ -84,6 +90,7 @@ const SearchPage: React.FC = () => {
                                 </div>
                             </div>
 
+                            {/* Result 2 */}
                             <div className="flex gap-4 sm:gap-5 group cursor-pointer">
                                 <div className="shrink-0 w-16 h-24 sm:w-20 sm:h-28 rounded-xl overflow-hidden shadow-lg transform group-hover:scale-[1.03] transition-transform duration-300">
                                     <img
@@ -102,6 +109,7 @@ const SearchPage: React.FC = () => {
                                 </div>
                             </div>
 
+                            {/* Result 3 */}
                             <div className="flex gap-4 sm:gap-5 group cursor-pointer">
                                 <div className="shrink-0 w-16 h-24 sm:w-20 sm:h-28 rounded-xl overflow-hidden shadow-lg transform group-hover:scale-[1.03] transition-transform duration-300">
                                     <img
