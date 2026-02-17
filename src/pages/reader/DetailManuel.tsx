@@ -34,7 +34,10 @@ const DetailManuel: React.FC = () => {
         }
     };
 
+    // State for expanded items
+    // Series expansion (Level 1)
     const [expandedSeries, setExpandedSeries] = React.useState<number[]>([]);
+    // Lesson expansion (Level 2)
     const [expandedLessons, setExpandedLessons] = React.useState<number[]>([]);
 
     const toggleSeries = (seriesId: number) => {
@@ -75,6 +78,7 @@ const DetailManuel: React.FC = () => {
 
     return (
         <div className="dark bg-[#0a1113] font-display text-slate-200 antialiased min-h-screen flex selection:bg-primary/30">
+            {/* Desktop Sidebar Navigation (hidden on mobile) */}
             <aside className="hidden md:flex flex-col items-center w-20 lg:w-64 shrink-0 border-r border-white/5 bg-[#0a1113] sticky top-0 h-screen py-8 gap-2">
                 <div className="mb-8 flex items-center justify-center lg:justify-start lg:px-6 w-full">
                     <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>local_library</span>
@@ -100,7 +104,9 @@ const DetailManuel: React.FC = () => {
                 </nav>
             </aside>
 
+            {/* Main Content */}
             <div className="flex-1 flex flex-col min-h-screen">
+                {/* Sticky Header */}
                 <header className="sticky top-0 z-40 glass-header px-4 sm:px-5 md:px-8 py-3 sm:py-4 flex items-center gap-3 sm:gap-4">
                     <button
                         onClick={() => navigate(-1)}
@@ -112,7 +118,9 @@ const DetailManuel: React.FC = () => {
                 </header>
 
                 <main className="flex-1 px-4 sm:px-5 md:px-8 lg:px-12 pb-32 md:pb-12 overflow-y-auto no-scrollbar">
+                    {/* Desktop: side-by-side layout / Mobile: stacked */}
                     <div className="md:flex md:gap-10 lg:gap-16 md:items-start md:mt-8 md:max-w-4xl md:mx-auto">
+                        {/* Book Cover & Info */}
                         <section className="mt-6 md:mt-0 mb-10 md:mb-0 flex flex-col items-center md:sticky md:top-24 md:shrink-0">
                             <input
                                 type="file"
@@ -135,6 +143,7 @@ const DetailManuel: React.FC = () => {
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
+                                {/* Edit Button for Admin */}
                                 {role === 'admin' && (
                                     <button
                                         onClick={handleEditClick}
@@ -156,6 +165,7 @@ const DetailManuel: React.FC = () => {
                             </div>
                         </section>
 
+                        {/* Table of Contents - Nested Hierarchy */}
                         <section className="mt-8 md:mt-0 md:flex-1">
                             <div className="flex items-center justify-between mb-5 sm:mb-6">
                                 <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">Sommaire</h3>
@@ -167,6 +177,7 @@ const DetailManuel: React.FC = () => {
 
                                     return (
                                         <div key={series.id} className="border-b border-white/5 pb-2">
+                                            {/* Level 1: Series Header */}
                                             <button
                                                 onClick={() => toggleSeries(series.id)}
                                                 className="w-full flex items-center justify-between text-left py-3 group hover:bg-white/5 px-2 rounded-lg transition-colors"
@@ -179,6 +190,7 @@ const DetailManuel: React.FC = () => {
                                                 </span>
                                             </button>
 
+                                            {/* Level 1 Content: Lessons */}
                                             {isSeriesExpanded && (
                                                 <div className="mt-2 space-y-2 pl-2 animate-fade-in">
                                                     {series.lessons?.map((lesson) => {
@@ -187,6 +199,7 @@ const DetailManuel: React.FC = () => {
 
                                                         return (
                                                             <div key={lesson.id} className="space-y-2">
+                                                                {/* Level 2: Lesson Header / Link */}
                                                                 <div
                                                                     onClick={() => hasChapters ? toggleLesson(lesson.id) : navigate(`/reader/lesson/${lesson.id}`)}
                                                                     className={`p-3.5 sm:p-4 rounded-2xl bg-card-dark border border-white/5 flex items-center gap-3 sm:gap-4 group active:bg-white/5 transition-colors cursor-pointer hover:border-primary/50
@@ -207,7 +220,7 @@ const DetailManuel: React.FC = () => {
                                                                             {lesson.title}
                                                                         </h4>
                                                                         <p className="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider font-semibold">
-                                                                            {lesson.duration || "10 min"} • {hasChapters ? `${lesson.chapters.length} Chapitres` : 'Lecture seule'}
+                                                                            {lesson.duration || "10 min"} • {hasChapters ? `${lesson.chapters?.length} Chapitres` : 'Lecture seule'}
                                                                         </p>
                                                                     </div>
                                                                     {hasChapters ? (
@@ -221,9 +234,10 @@ const DetailManuel: React.FC = () => {
                                                                     )}
                                                                 </div>
 
+                                                                {/* Level 3: Chapters (Nested) */}
                                                                 {hasChapters && isLessonExpanded && (
                                                                     <div className="pl-6 space-y-2 animate-fade-in border-l border-white/10 ml-5 py-2">
-                                                                        {lesson.chapters.map((chapter: any, cIndex: number) => (
+                                                                        {lesson.chapters?.map((chapter: any, cIndex: number) => (
                                                                             <div
                                                                                 key={chapter.id}
                                                                                 onClick={() => navigate(`/reader/lesson/${lesson.id}?chapter=${cIndex}`)}
@@ -241,7 +255,7 @@ const DetailManuel: React.FC = () => {
                                                                 )}
                                                             </div>
                                                         );
-                                                     })}
+                                                    })}
                                                     {(!series.lessons || series.lessons.length === 0) && (
                                                         <p className="text-sm text-slate-500 italic pl-4 py-2">Aucune leçon dans cette série.</p>
                                                     )}
