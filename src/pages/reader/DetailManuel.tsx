@@ -58,7 +58,7 @@ const DetailManuel: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="bg-background-dark min-h-screen flex items-center justify-center">
+            <div className="min-h-screen bg-[#0a1113] flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
@@ -66,13 +66,10 @@ const DetailManuel: React.FC = () => {
 
     if (error || !volumeDetails) {
         return (
-            <div className="bg-background-dark min-h-screen flex flex-col items-center justify-center text-white gap-4 p-4 text-center">
-                <span className="material-symbols-outlined text-4xl text-slate-500">error</span>
-                <p>Manuel introuvable ou erreur de chargement.</p>
-                <button
-                    onClick={() => navigate('/reader')}
-                    className="mt-4 px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm font-bold transition-colors"
-                >
+            <div className="min-h-screen bg-[#0a1113] flex items-center justify-center flex-col gap-4 text-slate-400">
+                <span className="material-symbols-outlined text-4xl">error</span>
+                <p>{error || "Manuel introuvable"}</p>
+                <button onClick={() => navigate('/reader')} className="text-primary hover:underline">
                     Retour à l'accueil
                 </button>
             </div>
@@ -80,84 +77,76 @@ const DetailManuel: React.FC = () => {
     }
 
     return (
-        <div className="bg-background-dark min-h-screen flex flex-col font-display antialiased selection:bg-primary/30 pb-20 md:pb-0">
-            {/* Desktop Sidebar Navigation */}
-            <div className="flex flex-1 min-h-0">
-                <aside className="hidden md:flex flex-col items-center w-20 lg:w-64 shrink-0 border-r border-white/5 bg-[#0a1113] h-screen sticky top-0 py-8 gap-2">
-                    <div className="mb-8 flex items-center justify-center lg:justify-start lg:px-6 w-full cursor-pointer" onClick={() => navigate('/reader')}>
-                        <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>local_library</span>
-                        <span className="hidden lg:block ml-3 text-white font-bold text-lg tracking-tight">Oikos</span>
-                    </div>
-                    <nav className="flex-1 flex flex-col gap-1 w-full px-3">
-                        <a href="/reader" className="flex items-center gap-3 px-3 py-3 rounded-xl bg-white/5 text-white border border-white/5">
-                            <span className="material-symbols-outlined text-[22px]">home</span>
-                            <span className="hidden lg:block text-sm font-medium">Accueil</span>
-                        </a>
-                        <a href="/reader/current" className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
-                            <span className="material-symbols-outlined text-[22px]">local_library</span>
-                            <span className="hidden lg:block text-sm font-medium">Mes Manuels</span>
-                        </a>
-                        <a href="/search" className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
-                            <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>search</span>
-                            <span className="hidden lg:block text-sm font-bold">Rechercher</span>
-                        </a>
-                        <a href="/settings" className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
-                            <span className="material-symbols-outlined text-[22px]">settings</span>
-                            <span className="hidden lg:block text-sm font-medium">Paramètres</span>
-                        </a>
-                    </nav>
-                </aside>
+        <div className="dark bg-[#0a1113] font-display text-slate-200 antialiased min-h-screen flex selection:bg-primary/30">
+            {/* Desktop Sidebar Navigation (hidden on mobile) */}
+            <aside className="hidden md:flex flex-col items-center w-20 lg:w-64 shrink-0 border-r border-white/5 bg-[#0a1113] sticky top-0 h-screen py-8 gap-2">
+                <div className="mb-8 flex items-center justify-center lg:justify-start lg:px-6 w-full">
+                    <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>local_library</span>
+                    <span className="hidden lg:block ml-3 text-white font-bold text-lg tracking-tight">Oikos</span>
+                </div>
+                <nav className="flex-1 flex flex-col gap-1 w-full px-3">
+                    <a href="/reader" className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+                        <span className="material-symbols-outlined text-[22px]">home</span>
+                        <span className="hidden lg:block text-sm font-medium">Accueil</span>
+                    </a>
+                    <a href="/reader/current" className="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary/10 text-primary border border-primary/20">
+                        <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_library</span>
+                        <span className="hidden lg:block text-sm font-bold">Mes Manuels</span>
+                    </a>
+                    <a href="/search" className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+                        <span className="material-symbols-outlined text-[22px]">search</span>
+                        <span className="hidden lg:block text-sm font-medium">Rechercher</span>
+                    </a>
+                    <a href="/settings" className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+                        <span className="material-symbols-outlined text-[22px]">settings</span>
+                        <span className="hidden lg:block text-sm font-medium">Paramètres</span>
+                    </a>
+                </nav>
+            </aside>
 
-                <main className="flex-1 overflow-y-auto w-full md:px-8 md:py-8">
-                    <div className="max-w-4xl mx-auto w-full">
-                        {/* Mobile Header / Back Button */}
-                        <div className="flex items-center gap-4 mb-6 md:hidden px-4 pt-6">
-                            <button
-                                onClick={() => navigate(-1)}
-                                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors active:scale-95"
-                            >
-                                <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-                            </button>
-                        </div>
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col min-h-screen">
+                {/* Sticky Header */}
+                <header className="sticky top-0 z-40 glass-header px-4 sm:px-5 md:px-8 py-3 sm:py-4 flex items-center gap-3 sm:gap-4">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white active:scale-95 transition-transform"
+                    >
+                        <span className="material-symbols-outlined text-[20px] sm:text-[24px]">arrow_back_ios_new</span>
+                    </button>
+                    <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">Détails du manuel</h1>
+                </header>
 
-                        {/* Top: Volume Info */}
-                        <section className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12 mb-12 animate-fade-in px-4 md:px-0">
-                            <div className="relative group shrink-0">
-                                <div className="aspect-[2/3] w-48 sm:w-56 rounded-lg shadow-2xl overflow-hidden border border-white/10 relative transform group-hover:scale-[1.02] transition-transform duration-500">
-                                    {volumeDetails.cover_url ? (
-                                        <img
-                                            src={volumeDetails.cover_url}
-                                            alt={volumeDetails.title}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-6xl text-slate-700">book</span>
-                                        </div>
-                                    )}
-                                    {/* Edit Overlay */}
-                                    {role === 'admin' && (
-                                        <div
-                                            onClick={handleEditClick}
-                                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer z-10"
-                                        >
-                                            <span className="text-white font-bold text-sm flex items-center gap-2">
-                                                <span className="material-symbols-outlined">edit</span>
-                                                Modifier
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    className="hidden"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
+                <main className="flex-1 px-4 sm:px-5 md:px-8 lg:px-12 pb-32 md:pb-12 overflow-y-auto no-scrollbar">
+                    {/* Desktop: side-by-side layout / Mobile: stacked */}
+                    <div className="md:flex md:gap-10 lg:gap-16 md:items-start md:mt-8 md:max-w-4xl md:mx-auto">
+                        {/* Book Cover & Info */}
+                        <section className="mt-6 md:mt-0 mb-10 md:mb-0 flex flex-col items-center md:sticky md:top-24 md:shrink-0">
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                                accept="image/*"
+                            />
+                            <div className="relative w-48 sm:w-64 md:w-56 lg:w-72 aspect-[3/4] mb-6 sm:mb-8 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 group">
+                                {volumeDetails.cover_url ? (
+                                    <img
+                                        alt={volumeDetails.title}
+                                        className="w-full h-full object-cover"
+                                        src={volumeDetails.cover_url}
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                        <span className="material-symbols-outlined text-6xl text-slate-600">book</span>
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+
+                                {/* Edit Button for Admin */}
                                 {role === 'admin' && (
                                     <button
-                                        onClick={() => navigate(`/admin/volumes/edit/${id}`)}
+                                        onClick={handleEditClick}
                                         className="absolute bottom-4 right-4 w-10 h-10 bg-primary text-background-dark rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors z-20"
                                         title="Modifier la couverture"
                                     >
@@ -205,7 +194,7 @@ const DetailManuel: React.FC = () => {
                                             {isSeriesExpanded && (
                                                 <div className="mt-2 space-y-2 pl-2 animate-fade-in">
                                                     {series.lessons?.map((lesson) => {
-                                                        const chapters = lesson.chapters || [];
+                                                        const chapters = (lesson as any).chapters || [];
                                                         const hasChapters = chapters.length > 0;
                                                         const isLessonExpanded = expandedLessons.includes(lesson.id);
 
@@ -233,6 +222,7 @@ const DetailManuel: React.FC = () => {
                                                                         </h4>
                                                                         <p className="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider font-semibold">
                                                                             {lesson.duration || "10 min"} • {hasChapters ? `${chapters.length} Chapitres` : 'Lecture seule'}
+
                                                                         </p>
                                                                     </div>
                                                                     {hasChapters ? (
@@ -286,10 +276,7 @@ const DetailManuel: React.FC = () => {
                 </main>
             </div>
 
-            {/* Mobile Bottom Nav */}
-            <div className="md:hidden">
-                <BottomNav />
-            </div>
+            <BottomNav />
         </div>
     );
 };
