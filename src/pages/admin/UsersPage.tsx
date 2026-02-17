@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -18,6 +19,8 @@ const UsersPage: React.FC = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [users, setUsers] = useState<User[]>([]);
+
+
 
     const [loading, setLoading] = useState(true);
 

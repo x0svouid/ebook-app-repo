@@ -1,3 +1,4 @@
+import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Onboarding from './pages/Onboarding'
 import AccueilReader from './pages/reader/AccueilReader'
