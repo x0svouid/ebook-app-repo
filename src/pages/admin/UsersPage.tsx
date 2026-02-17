@@ -1,57 +1,45 @@
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { BottomNav } from '../../components/BottomNav';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-interface User {
+interface Profile {
     id: string;
-    name: string;
-    role: 'ADMIN' | 'LEADER';
-    bloc: string;
-    secteur: string;
-    avatar: string;
-    email: string;
-    active: boolean;
+    first_name: string | null;
+    last_name: string | null;
+    full_name: string | null;
+    email: string | null; // Note: email is not directly in profiles usually, but joined from auth.users or manually handled
+    role: string;
+    subscription_status: string;
+    avatar_url: string | null;
 }
 
 const UsersPage: React.FC = () => {
-    const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [users, setUsers] = useState<User[]>([]);
-
-
-
+    const [users, setUsers] = useState<Profile[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const { role } = useAuth();
+    const navigate = useNavigate();
 
-    // Fetch users from Supabase
     useEffect(() => {
+        if (role !== 'admin') {
+            navigate('/reader');
+            return;
+        }
         fetchUsers();
-    }, []);
+    }, [role]);
 
     const fetchUsers = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
+            // Fetch profiles
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .order('full_name');
+                .order('created_at', { ascending: false });
 
             if (error) throw error;
-
-            if (data) {
-                const mappedUsers: User[] = data.map((profile: any) => ({
-                    id: profile.id,
-                    name: profile.full_name || 'Sans nom',
-                    role: (profile.role === 'admin' ? 'ADMIN' : 'LEADER'),
-                    bloc: profile.bloc || '-',
-                    secteur: profile.secteur || '-',
-                    avatar: profile.avatar_url || '',
-                    email: profile.email || '',
-                    active: profile.active ?? true
-                }));
-                setUsers(mappedUsers);
-            }
+            setUsers(data || []);
         } catch (error) {
             console.error("Error fetching users:", error);
         } finally {
@@ -59,167 +47,116 @@ const UsersPage: React.FC = () => {
         }
     };
 
-    const handleToggle = async (id: string) => {
-        // Optimistic update
-        setUsers(users.map(user =>
-            user.id === id ? { ...user, active: !user.active } : user
-        ));
+    const toggleUserStatus = async (userId: string, currentStatus: string) => {
+        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+        // In a real app, you might hit an edge function to update auth.users or just update profile status
+        const { error } = await supabase
+            .from('profiles')
+            .update({ subscription_status: newStatus })
+            .eq('id', userId);
 
-        // Actual update
-        const userToUpdate = users.find(u => u.id === id);
-        if (userToUpdate) {
-            const { error } = await supabase
-                .from('profiles')
-                .update({ active: !userToUpdate.active })
-                .eq('id', id);
-
-            if (error) {
-                console.error("Error updating status:", error);
-                // Revert on error
-                setUsers(users.map(user =>
-                    user.id === id ? { ...user, active: user.active } : user
-                ));
-            }
+        if (error) {
+            alert("Erreur lors de la mise à jour.");
+        } else {
+            setUsers(users.map(u => u.id === userId ? { ...u, subscription_status: newStatus } : u));
         }
     };
 
-    const handleUserClick = (id: string) => {
-        navigate(`/admin/users/${id}`);
-    };
-
     const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.bloc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.secteur.toLowerCase().includes(searchTerm.toLowerCase())
+        (user.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
 
+    if (loading) return <div className="min-h-screen bg-[#0a1113] flex items-center justify-center text-white">Chargement...</div>;
+
     return (
-        <div className="bg-[#0b1416] min-h-screen text-slate-100 font-display pb-32 relative overflow-x-hidden selection:bg-primary/30">
-            {/* Page specific styles to match design exactly */}
-            <style>{`
-                .user-card {
-                    background-color: #121e21; /* Slightly lighter than bg */
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                }
-                .search-input {
-                    background-color: #121e21;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                }
-                .role-badge-admin {
-                    background-color: rgba(91, 33, 182, 0.3); /* Purple tint */
-                    border: 1px solid rgba(139, 92, 246, 0.4);
-                    color:rgb(196, 181, 253);
-                }
-                .role-badge-leader {
-                    background-color: rgba(6, 78, 59, 0.3); /* Green tint */
-                    border: 1px solid rgba(16, 185, 129, 0.4);
-                    color:rgb(110, 231, 183);
-                }
-                /* Custom Toggle Switch matching design */
-                .toggle-checkbox:checked {
-                    right: 0;
-                    border-color: #19c3e6;
-                }
-                .toggle-checkbox:checked + .toggle-label {
-                    background-color: #19c3e6;
-                }
-            `}</style>
-
-            <header className="px-5 pt-12 pb-6 flex items-start justify-between relative z-10">
-                <h1 className="text-4xl font-serif font-bold tracking-tight text-white leading-[1.1]">
-                    Gestion des<br />Utilisateurs
-                </h1>
-                <div className="relative">
-                    {/* Blue circle button with add icon */}
-                    <div
-                        className="w-12 h-12 rounded-full bg-[#18363c] flex items-center justify-center relative cursor-pointer hover:bg-[#1f454d] transition-colors"
-                        onClick={() => navigate('/admin/users/new')}
-                    >
-                        <span className="material-symbols-outlined text-[#19c3e6] text-2xl">person_add</span>
-                        {/* Notification dot */}
-                        <div className="absolute top-2 right-1 w-3 h-3 bg-[#19c3e6] rounded-full border-2 border-[#0b1416]"></div>
+        <div className="min-h-screen bg-[#0a1113] text-slate-200 font-display p-6 md:p-12">
+            <div className="max-w-6xl mx-auto">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <div className="flex items-center gap-4 mb-2">
+                            <button onClick={() => navigate('/admin')} className="text-slate-400 hover:text-white transition-colors">
+                                <span className="material-symbols-outlined">arrow_back</span>
+                            </button>
+                            <h1 className="text-3xl font-serif font-bold text-white">Utilisateurs</h1>
+                        </div>
+                        <p className="text-slate-400 ml-10">Gérez les accès et les abonnements.</p>
                     </div>
-                </div>
-            </header>
+                    <div className="relative w-full md:w-auto">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-500">search</span>
+                        <input
+                            type="text"
+                            placeholder="Rechercher un utilisateur..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full md:w-80 bg-[#111e21] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                        />
+                    </div>
+                </header>
 
-            <div className="px-5 mb-8 relative z-10">
-                <div className="flex items-center search-input rounded-xl px-4 py-3.5 shadow-sm">
-                    <span className="material-symbols-outlined text-slate-400 mr-3 text-xl">search</span>
-                    <input
-                        className="bg-transparent border-none outline-none w-full text-[15px] placeholder:text-slate-500 text-white focus:ring-0 p-0 font-medium"
-                        placeholder="Rechercher un membre..."
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <span className="material-symbols-outlined text-slate-400 text-xl cursor-pointer">tune</span>
+                <div className="bg-[#111e21] border border-white/5 rounded-2xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b border-white/5 bg-white/2">
+                                    <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Utilisateur</th>
+                                    <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rôle</th>
+                                    <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut</th>
+                                    <th className="text-right py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {filteredUsers.map((user) => (
+                                    <tr key={user.id} className="hover:bg-white/5 transition-colors">
+                                        <td className="py-4 px-6">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-slate-800 overflow-hidden flex items-center justify-center">
+                                                    {user.avatar_url ? (
+                                                        <img src={user.avatar_url} alt={user.full_name || 'User'} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span className="material-symbols-outlined text-slate-500">person</span>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <div className="font-bold text-white max-w-[200px] truncate">{user.full_name || 'Sans nom'}</div>
+                                                    <div className="text-xs text-slate-500 max-w-[200px] truncate">{user.email || 'Email masqué'}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-6">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
+                                                ${user.role === 'admin' ? 'bg-purple-500/10 text-purple-400' : 'bg-slate-700/30 text-slate-400'}
+                                            `}>
+                                                {user.role}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-6">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize border
+                                                ${user.subscription_status === 'active'
+                                                    ? 'bg-green-500/5 text-green-400 border-green-500/20'
+                                                    : 'bg-red-500/5 text-red-400 border-red-500/20'}
+                                            `}>
+                                                {user.subscription_status === 'active' ? 'Actif' : 'Bloqué'}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-6 text-right">
+                                            <button
+                                                onClick={() => toggleUserStatus(user.id, user.subscription_status)}
+                                                className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors"
+                                                title={user.subscription_status === 'active' ? "Bloquer l'utilisateur" : "Activer l'utilisateur"}
+                                            >
+                                                <span className="material-symbols-outlined">
+                                                    {user.subscription_status === 'active' ? 'block' : 'check_circle'}
+                                                </span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
-            <main className="px-5 space-y-4 relative z-0">
-                {loading ? (
-                    <div className="flex justify-center py-10">
-                        <div className="w-8 h-8 border-4 border-slate-700 border-t-[#19c3e6] rounded-full animate-spin"></div>
-                    </div>
-                ) : (
-                    filteredUsers.map((user) => (
-                        <div
-                            key={user.id}
-                            className="user-card px-4 py-4 rounded-[20px] flex items-center gap-4 cursor-pointer active:scale-[0.99] transition-transform"
-                            onClick={() => handleUserClick(user.id)}
-                        >
-                            {/* Avatar */}
-                            <div className="relative shrink-0">
-                                {user.avatar ? (
-                                    <div className="w-[52px] h-[52px] rounded-full p-[2px] bg-gradient-to-tr from-blue-500 to-purple-500">
-                                        <img alt={user.name} className="w-full h-full rounded-full object-cover border-2 border-[#121e21]" src={user.avatar} />
-                                    </div>
-                                ) : (
-                                    <div className="w-[52px] h-[52px] rounded-full bg-slate-700/50 border border-white/10 flex items-center justify-center text-lg font-bold text-slate-300">
-                                        {user.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Info */}
-                            <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-[17px] text-white truncate mb-0.5">
-                                    {user.name}
-                                </h3>
-                                <p className="text-[13px] text-slate-400 font-medium mb-2">
-                                    Bloc: {user.bloc} - Secteur: {user.secteur}
-                                </p>
-                                <span className={`inline-block px-3 py-[3px] rounded-[6px] text-[10px] font-bold uppercase tracking-wider ${user.role === 'ADMIN' ? 'role-badge-admin' : 'role-badge-leader'
-                                    }`}>
-                                    {user.role}
-                                </span>
-                            </div>
-
-                            {/* Toggle */}
-                            <div
-                                className="relative inline-block w-11 h-6 shrink-0 z-10"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleToggle(user.id);
-                                }}
-                            >
-                                <input
-                                    readOnly
-                                    checked={user.active}
-                                    className={`absolute block w-5 h-5 rounded-full appearance-none cursor-pointer transition-all duration-300 top-[2px] z-10 ${user.active ? 'right-[2px] bg-white' : 'left-[2px] bg-slate-400'}`}
-                                    type="checkbox"
-                                />
-                                <div className={`block w-full h-full rounded-full transition-colors duration-300 ${user.active ? 'bg-[#19c3e6]' : 'bg-slate-700'}`}></div>
-                            </div>
-                        </div>
-                    )))}
-            </main>
-
-            {/* Background Glows matching Screenshot */}
-            <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-[#132d33] to-transparent opacity-40 pointer-events-none"></div>
-
-            <BottomNav />
         </div>
     );
 };
