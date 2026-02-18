@@ -1,0 +1,379 @@
+/* ============================================
+   Onboarding — from Stitch "Onboarding user p1/p2/p3"
+   ============================================ */
+
+/* Container */
+.onboarding-container {
+    max-width: 448px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    padding: 48px 32px 64px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode (default) */
+.onboarding-container {
+    background-color: var(--bg-dark);
+    color: var(--text-100);
+}
+
+.onboarding-container.light-mode {
+    background-color: var(--bg-light);
+    color: var(--text-900);
+}
+
+/* Ambient glow orbs */
+.ambient-glow-1 {
+    position: fixed;
+    top: -10%;
+    right: -10%;
+    width: 40%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: -1;
+    pointer-events: none;
+    background: var(--primary-10);
+}
+
+.ambient-glow-2 {
+    position: fixed;
+    bottom: -5%;
+    left: -5%;
+    width: 30%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: -1;
+    pointer-events: none;
+    background: var(--pink-400-10);
+}
+
+/* Theme toggle */
+.theme-toggle {
+    position: fixed;
+    top: 48px;
+    right: 24px;
+    z-index: 50;
+    padding: 8px;
+    border-radius: var(--radius-full);
+    background-color: var(--slate-800);
+    color: #cbd5e1;
+    border: 1px solid var(--slate-700);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+.light-mode .theme-toggle {
+    background-color: var(--slate-100);
+    color: #475569;
+    border-color: var(--slate-200);
+}
+
+/* Illustration area */
+.illustration-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+.illustration-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 320px;
+}
+
+/* Text area */
+.text-area {
+    text-align: center;
+    margin-top: 32px;
+}
+
+.text-area h1 {
+    font-family: var(--font-serif);
+    font-size: 40px;
+    line-height: 1.1;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.light-mode .text-area h1 {
+    color: var(--text-900);
+}
+
+.text-area p {
+    color: var(--text-400);
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 280px;
+    margin: 0 auto;
+    font-family: var(--font-display);
+}
+
+/* CTA area — circular button version (p1, p2) */
+.cta-area {
+    margin-top: 64px;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Dot indicators */
+.dot-indicators {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 40px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background-color: var(--slate-700-50);
+    transition: all 0.3s;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+}
+
+.dot.active {
+    width: 32px;
+    background-color: var(--primary);
+}
+
+.light-mode .dot {
+    background-color: var(--slate-200);
+}
+
+.light-mode .dot.active {
+    background-color: var(--primary);
+}
+
+/* Circular CTA button */
+.circular-cta {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.circular-cta .glow {
+    position: absolute;
+    inset: -4px;
+    background: var(--primary-30);
+    border-radius: var(--radius-full);
+    filter: blur(4px);
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.circular-cta:hover .glow {
+    opacity: 1;
+}
+
+.circular-cta .inner {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    background-color: var(--primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 20px 25px -5px rgba(25, 195, 230, 0.4);
+    transition: transform 0.2s;
+}
+
+.circular-cta:active .inner {
+    transform: scale(0.95);
+}
+
+.circular-cta .inner .material-symbols-outlined {
+    font-size: 36px;
+}
+
+.circular-cta .progress-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.circular-cta .progress-ring .track {
+    fill: transparent;
+    stroke: var(--primary-20);
+    stroke-width: 2;
+}
+
+.circular-cta .progress-ring .fill {
+    fill: transparent;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 238;
+    transition: stroke-dashoffset 0.5s;
+}
+
+/* Skip button */
+.skip-btn {
+    margin-top: 32px;
+    background: none;
+    border: none;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.skip-btn:hover {
+    color: var(--primary);
+}
+
+/* Full-width CTA (p3) */
+.cta-fullwidth {
+    width: 100%;
+    background-color: var(--primary);
+    color: white;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    padding: 16px 32px;
+    border: none;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    box-shadow: 0 10px 15px -3px rgba(25, 195, 230, 0.2);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.cta-fullwidth:hover {
+    background-color: #22d3ee;
+    transform: scale(1.02);
+}
+
+.cta-fullwidth:active {
+    transform: scale(0.98);
+}
+
+/* Home indicator */
+.home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 128px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background-color: var(--slate-800);
+}
+
+.light-mode .home-indicator {
+    background-color: var(--slate-200);
+}
+
+/* SVG theme-aware fills */
+.svg-fill-white {
+    fill: white;
+}
+
+.svg-fill-slate-50 {
+    fill: #f8fafc;
+}
+
+.svg-fill-slate-100 {
+    fill: #f1f5f9;
+}
+
+.svg-fill-slate-200 {
+    fill: #e2e8f0;
+}
+
+.svg-fill-slate-300 {
+    fill: #cbd5e1;
+}
+
+.svg-fill-slate-400 {
+    fill: #94a3b8;
+}
+
+.svg-stroke-slate-200 {
+    stroke: #e2e8f0;
+}
+
+.svg-stroke-slate-900 {
+    stroke: #0f172a;
+}
+
+/* Dark mode SVG overrides */
+.onboarding-container:not(.light-mode) .svg-fill-white {
+    fill: #1e293b;
+}
+
+.onboarding-container:not(.light-mode) .svg-fill-slate-50 {
+    fill: #0f172a;
+}
+
+.onboarding-container:not(.light-mode) .svg-fill-slate-100 {
+    fill: #1e293b;
+}
+
+.onboarding-container:not(.light-mode) .svg-fill-slate-200 {
+    fill: #334155;
+}
+
+.onboarding-container:not(.light-mode) .svg-fill-slate-300 {
+    fill: #475569;
+}
+
+.onboarding-container:not(.light-mode) .svg-fill-slate-400 {
+    fill: #64748b;
+}
+
+.onboarding-container:not(.light-mode) .svg-stroke-slate-200 {
+    stroke: #334155;
+}
+
+.onboarding-container:not(.light-mode) .svg-stroke-slate-900 {
+    stroke: #f1f5f9;
+}
+
+/* Page transitions */
+.step-enter {
+    opacity: 0;
+    transform: translateX(40px);
+}
+
+.step-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.4s ease;
+}
+
+.step-exit {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.4s ease;
+}
