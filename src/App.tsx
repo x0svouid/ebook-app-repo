@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import Onboarding from './pages/Onboarding'
+import Onboarding from './pages/OnboardingPage'
 import AccueilReader from './pages/reader/AccueilReader'
 import DetailManuel from './pages/reader/DetailManuel'
 import SearchPage from './pages/reader/SearchPage'
