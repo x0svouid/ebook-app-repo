@@ -3,8 +3,12 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useReader } from '../../hooks/useReader';
 import ReactMarkdown from 'react-markdown';
 
+// Helper to split markdown content into "pages" based on headers
 const splitContentIntoPages = (markdown: string): string[] => {
     if (!markdown) return [];
+    // Split by H3 (###) headers, keeping the header in the next part
+    // Using positive lookahead regex if possible, or just split and rejoin
+    // Simple approach: Split by '\n### '
     const parts = markdown.split(/\n(?=### )/g);
     return parts.map(p => p.trim()).filter(p => p.length > 0);
 };
@@ -34,16 +38,21 @@ const LessonReader: React.FC = () => {
         }
     }, [id]);
 
+    // Build steps array when lessonDetails is loaded
     useEffect(() => {
         if (!lessonDetails) return;
 
         const newSteps: ReaderStep[] = [];
+
+        // 1. Introduction
         newSteps.push({ type: 'intro', title: lessonDetails.title });
 
+        // 2. Chapters (flattened into pages)
         if (lessonDetails.chapters) {
             lessonDetails.chapters.forEach((chapter, cIdx) => {
                 const pages = splitContentIntoPages(chapter.content);
                 if (pages.length === 0) {
+                    // Fallback for empty chapter
                     newSteps.push({
                         type: 'content',
                         title: chapter.title || undefined,
@@ -67,26 +76,43 @@ const LessonReader: React.FC = () => {
             });
         }
 
+        // 3. Conclusion
         newSteps.push({ type: 'conclusion', title: "Conclusion" });
+
         setSteps(newSteps);
 
+        // Handle Deep Linking (initial load only)
         const chapterParam = searchParams.get('chapter');
         if (chapterParam) {
             const cIdxTarget = parseInt(chapterParam, 10);
             if (!isNaN(cIdxTarget)) {
+                // Find first step matching this chapter index
                 const targetStepIndex = newSteps.findIndex(s => s.chapterIndex === cIdxTarget);
                 if (targetStepIndex !== -1) {
                     setCurrentStepIndex(targetStepIndex);
                 }
             }
         }
+
     }, [lessonDetails]);
 
+
     useEffect(() => {
+        // Scroll to top when changing steps
         if (contentRef.current) {
             contentRef.current.scrollTop = 0;
         }
+
+        // Update progress
+        if (id && steps.length > 0) {
+            // Update progress logic
+            // const currentProgress = ((currentStepIndex + 1) / steps.length) * 100;
+            // const isCompleted = steps[currentStepIndex].type === 'conclusion';
+            // updateProgress(Number(id), Math.min(Math.max(currentProgress, 0), 100), isCompleted);
+        }
+
     }, [currentStepIndex, steps, id]);
+
 
     const handleNext = () => {
         if (currentStepIndex < steps.length - 1) {
@@ -134,6 +160,7 @@ const LessonReader: React.FC = () => {
 
     return (
         <div className="fixed inset-0 bg-[#0a1113] font-serif text-slate-200 flex flex-col z-50">
+            {/* Top Bar */}
             <header className="flex items-center justify-between px-4 py-3 bg-[#0a1113] border-b border-white/5 z-10 shrink-0">
                 <button
                     onClick={() => navigate(-1)}
@@ -165,6 +192,7 @@ const LessonReader: React.FC = () => {
                 </div>
             </header>
 
+            {/* Pagination Progress Bar */}
             <div className="h-1 bg-white/5 w-full shrink-0">
                 <div
                     className="h-full bg-primary transition-all duration-300 ease-out"
@@ -172,11 +200,14 @@ const LessonReader: React.FC = () => {
                 ></div>
             </div>
 
+            {/* Content Area */}
             <div
                 ref={contentRef}
                 className="flex-1 overflow-y-auto no-scrollbar scroll-smooth relative"
             >
                 <div className="max-w-2xl mx-auto px-6 py-12 md:py-20 min-h-full flex flex-col">
+
+                    {/* View: Introduction */}
                     {currentStep.type === 'intro' && (
                         <div className="flex-1 flex flex-col items-center justify-center animate-fade-in text-center">
                             <h1 className="text-4xl md:text-5xl font-serif font-black text-white mb-4 leading-tight tracking-tight uppercase">
@@ -227,8 +258,10 @@ const LessonReader: React.FC = () => {
                         </div>
                     )}
 
+                    {/* View: Content Page */}
                     {currentStep.type === 'content' && (
                         <div className="animate-fade-in">
+                            {/* Only show Title on the first page of the chapter */}
                             {currentStep.subPageIndex === 0 && (
                                 <div className="flex gap-4 mb-12">
                                     <div className="w-1.5 self-stretch bg-primary shrink-0"></div>
@@ -245,8 +278,13 @@ const LessonReader: React.FC = () => {
 
                                 <ReactMarkdown
                                     components={{
+                                        // Custom styling for verses (blockquotes)
+                                        // Custom styling for verses (blockquotes)
                                         blockquote: ({ node, children, ...props }) => {
                                             const childArray = React.Children.toArray(children);
+                                            // Heuristic: If there's more than one paragraph, the last one is likely the reference.
+                                            // Even if there is only 1, we treat it as text. 
+                                            // The user must separate text and reference with a blank line in markdown to generate 2 <p> tags.
                                             const hasReference = childArray.length > 1;
 
                                             return (
@@ -260,6 +298,7 @@ const LessonReader: React.FC = () => {
                                                             if (isReference) {
                                                                 return (
                                                                     <div key={index} className="not-italic mt-6 text-right w-full">
+                                                                        {/* Reference Styling: Blue, Sans, Bold, Uppercase */}
                                                                         <div className="text-[#19c3e6] font-sans font-bold text-sm uppercase tracking-widest inline-block border-t border-[#19c3e6]/30 pt-4">
                                                                             {child}
                                                                         </div>
@@ -274,15 +313,16 @@ const LessonReader: React.FC = () => {
                                                             );
                                                         })}
                                                     </blockquote>
+                                                    {/* CSS Injection for Drop Cap - Targeting the P tag inside the wrapper */}
                                                     <style>{`
                                                         .drop-cap-wrapper > p::first-letter {
                                                             float: left;
-                                                            font-size: 4.5em;
+                                                            font-size: 4.5em; /* Increased size */
                                                             line-height: 0.7;
-                                                            font-weight: 700;
+                                                            font-weight: 700; /* Black/Bold */
                                                             margin-right: 0.75rem;
                                                             margin-top: 0.25rem;
-                                                            margin-bottom: -0.5rem;
+                                                            margin-bottom: -0.5rem; /* Fix layout shift */
                                                             color: #19c3e6;
                                                             font-family: 'DM Serif Display', serif;
                                                             text-transform: uppercase;
@@ -291,6 +331,7 @@ const LessonReader: React.FC = () => {
                                                 </div>
                                             );
                                         },
+                                        // Enhancing H3 subtitiles (White, Serif, Large, Underlined)
                                         h3: ({ node, children, ...props }) => (
                                             <div className="mt-16 mb-8">
                                                 <h3 className="text-3xl font-serif font-bold text-white mb-3" {...props}>
@@ -299,6 +340,10 @@ const LessonReader: React.FC = () => {
                                                 <div className="w-16 h-1 bg-primary rounded-full"></div>
                                             </div>
                                         ),
+                                        // Custom paragraph styling for better readability
+                                        // Note: We remove the margins here when inside blockquote references to avoid double spacing, 
+                                        // but since we wrap children in blockquote above, this 'p' might be nested. 
+                                        // The simple p styling is fine for general text.
                                         p: ({ node, children, ...props }) => (
                                             <p className="mb-6 leading-relaxed text-slate-300 font-lora text-lg md:text-xl last:mb-0" {...props}>
                                                 {children}
@@ -312,6 +357,7 @@ const LessonReader: React.FC = () => {
                         </div>
                     )}
 
+                    {/* View: Conclusion */}
                     {currentStep.type === 'conclusion' && (
                         <div className="flex-1 flex flex-col justify-center animate-fade-in">
                             <div className="text-center mb-10">
@@ -363,6 +409,7 @@ const LessonReader: React.FC = () => {
                         </div>
                     )}
 
+                    {/* Navigation Buttons (Bottom Sticky) */}
                     <div className="mt-auto pt-10 flex gap-4">
                         {currentStepIndex > 0 && (
                             <button
