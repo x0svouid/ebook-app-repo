@@ -1,0 +1,26 @@
+.ios-blur {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.glow-cyan {
+    box-shadow: 0 0 20px rgba(25, 195, 230, 0.4);
+}
+
+.glow-cyan-text {
+    text-shadow: 0 0 10px rgba(25, 195, 230, 0.5);
+}
+
+.dock-shadow {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+}
+
+/* Custom scrollbar hiding if needed, though Tailwind 'no-scrollbar' plugin might be used globally */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
